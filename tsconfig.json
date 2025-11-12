@@ -11,11 +11,15 @@
     "outDir": ".dist",
     "rootDir": "./",
     "sourceMap": true,
-    "lib": ["esnext"]
+    "lib": ["esnext"],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./prisma/generated/client"  
+    ],
   },
   "include": [
     "index.ts",
-    "prisma/generated/client/**/*.ts"
+    "prisma/generated/client/**/*.ts",
   ],
   "exclude": ["node_modules", "dist"]
 }

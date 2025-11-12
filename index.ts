@@ -1,50 +1,32 @@
-import express from 'express';
-import cors from 'cors';
-import { Pool } from 'pg';
+import { PrismaClient } from './prisma/generated/client'
 
-const app = express();
-const port = 3001;
+const prisma = new PrismaClient();
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+async function main() {
+  const artist = await prisma.artists.create({
+    data: {
+      name: "Kaleb Berhane",
+      email: "kaleb@example.com",
+      password_hash: "Welcome", // ⚠️ plaintext for now (not secure)
+      bio: "Independent music artist passionate about soulful R&B and Afrobeat.",
+      country: "Canada",
+      profile_image_url: "https://example.com/images/kaleb.jpg",
+      auth_provider: "local",
+      provider_id: null,
+      created_at: new Date(),
+      updated_at: new Date(),
+    },
+  });
 
-// Database connection
-const pool = new Pool({
-  host: 'localhost',
-  port: 2000,
-  database: 'bethany',
-  user: 'postgres',
-  password: 'Bethany',
-});
+  console.log("Artist created successfully:", artist);
+}
 
-// Test endpoint
-app.get('/api/test', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT 1');
-    res.json({ message: 'Database connected successfully!' });
-  } catch (error) {
-    res.status(500).json({ error: 'Database connection failed' });
-  }
-});
-
-// Get artists endpoint
-app.get('/api/artists', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT id, username, email, artist_name FROM artists');
-    res.json({ 
-      connected: true,
-      artists: result.rows 
-    });
-  } catch (error) {
-    console.error('Database error:', error);
-    res.status(500).json({ 
-      connected: false,
-      error: 'Failed to fetch artists' 
-    });
-  }
-});
-
-app.listen(port, () => {
-  console.log(`🚀 Backend server running on http://localhost:${port}`);
-});
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });

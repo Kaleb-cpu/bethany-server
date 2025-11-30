@@ -1,85 +1,68 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "./generated/client"
+  output   = "./generated/prisma-client"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  schemas  = ["artists"]
 }
 
-model artists {
-  artist_id         Int               @id @default(autoincrement())
-  name              String            @db.VarChar(100)
-  email             String            @unique @db.VarChar(150)
-  password_hash     String?           @db.VarChar(255)
+model Artist {
+  id                String    @id @default(cuid())
+  name              String    @db.VarChar(100)
+  email             String    @unique(map: "artists_email_key") @db.VarChar(150) 
   bio               String?
-  country           String?           @db.VarChar(100)
+  country           String?   @db.VarChar(100)
   profile_image_url String?
-  auth_provider     String?           @default("local") @db.VarChar(50)
-  provider_id       String?           @db.VarChar(255)
-  created_at        DateTime?         @default(now()) @db.Timestamp(6)
-  updated_at        DateTime?         @default(now()) @db.Timestamp(6)
-  artist_sessions   artist_sessions[]
-}
+  auth_provider     String?   @default("local") @db.VarChar(50)
+  email_verified    Boolean   @default(false)
+  provider_id       String?   @db.VarChar(255)
+  created_at        DateTime? @default(now()) @db.Timestamp(6)
+  updated_at        DateTime? @default(now()) @db.Timestamp(6)
+  sessions          Session[]
+  accounts          Account[]
 
-model artist_sessions {
-  session_id    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  artist_id     Int?
-  refresh_token String?   @db.VarChar(255)
-  expires_at    DateTime? @db.Timestamp(6)
-  created_at    DateTime? @default(now()) @db.Timestamp(6)
-  artists       artists?  @relation(fields: [artist_id], references: [artist_id], onDelete: Cascade, onUpdate: NoAction)
-}
-
-model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean   @default(false)
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-
-  @@unique([email])
-  @@map("user")
+  @@map("artist")
+  @@schema("artists")
 }
 
 model Session {
   id        String   @id
   expiresAt DateTime
-  token     String
+  token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ipAddress String?
   userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  artistId  String
+  artist    Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
   @@map("session")
+  @@schema("artists")
+  @@index([artistId])
 }
 
 model Account {
   id                    String    @id
   accountId             String
   providerId            String
-  userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
   scope                 String?
-  password              String?
+  password              String
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+  artistId              String
+  artist                Artist    @relation(fields: [artistId], references: [id], onDelete: Cascade)
 
   @@map("account")
+  @@schema("artists")
+  @@index([artistId])
 }
 
 model Verification {
@@ -91,4 +74,7 @@ model Verification {
   updatedAt  DateTime @default(now()) @updatedAt
 
   @@map("verification")
+  @@schema("artists")
+  @@index([identifier])
 }
+

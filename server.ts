@@ -33,30 +33,7 @@ fastify.register(cookie, {
 
 
 fastify.register(fastifyBetterAuth, { auth });
-
-
-// async function testRequest() {
-//   try {
-//     await auth.api.signUpEmail({
-//       body: {
-//         name: "Kaleb",
-//         email: "kakuj424@gmail.com",
-//         password: "Welcome12."
-//       }
-//     })
-//   } catch (error) {
-//     if (error instanceof APIError) {
-//       console.log(error.message, error.status)
-//     }
-//   }
-
-// }
-
-// testRequest();
-
-
   
-
 fastify.listen({ port: 3000 }, (err, address) => {
   if (err) {
     fastify.log.error(err);

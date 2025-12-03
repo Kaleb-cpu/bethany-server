@@ -54,7 +54,6 @@ trustedOrigins: ["http://localhost:3000", "http://localhost:5173"],
       ipAddress: "ipAddress",
       userAgent: "userAgent",
     },
-    expiresIn: 604800,
   },
 
 

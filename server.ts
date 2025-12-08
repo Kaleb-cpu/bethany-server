@@ -1,43 +1,16 @@
-import Fastify from "fastify";
-import fastifyCors from "@fastify/cors";
-import cookie from "@fastify/cookie";
+// src/server.ts
+import { buildApp } from "./app";
 
-import { prismaGlobal as db } from "./lib/server/prismaGlobal";
-import fastifyBetterAuth from "fastify-better-auth";
-import { auth } from "./lib/server/auth";
-import { APIError } from "better-auth/api";
+async function start() {
+  const fastify = await buildApp();
 
-const fastify = Fastify({
-  logger: {
-    level: "debug",
-    transport: {
-      target: "pino-pretty"
-    }
-  }
-});
-
-
-fastify.register(fastifyCors, {
-  origin: process.env.CLIENT_ORIGIN 
-    ? process.env.CLIENT_ORIGIN.split(',') 
-    : ["http://localhost:5173", "http://localhost:3000"],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  credentials: true,
-  maxAge: 86400,
-});
-
-fastify.register(cookie, {
-  secret: process.env.COOKIE_SECRET, // for cookies signature
-});
-
-
-fastify.register(fastifyBetterAuth, { auth });
-  
-fastify.listen({ port: 3000 }, (err, address) => {
-  if (err) {
+  try {
+    await fastify.listen({ port: 3000, host: "0.0.0.0" });
+    console.log("Server running at http://localhost:3000");
+  } catch (err) {
     fastify.log.error(err);
     process.exit(1);
   }
-  console.log("Fastify running on", address);
-});
+}
+
+start();

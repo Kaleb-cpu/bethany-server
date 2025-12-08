@@ -1,10 +1,10 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { prismaGlobal as db } from "./prismaGlobal";
+import { prismaGlobal as db } from "../prisma/prismaGlobal";
 import "dotenv/config";
 
 export const auth = betterAuth({
-trustedOrigins: ["http://localhost:3000", "http://localhost:5173"],
+  trustedOrigins: ["http://localhost:3000", "http://localhost:5173"],
   // Database adapter
   database: prismaAdapter(db, {
     provider: "postgresql",
@@ -15,7 +15,7 @@ trustedOrigins: ["http://localhost:3000", "http://localhost:5173"],
   user: {
     modelName: "Artist",
     fields: {
-      id: "id",
+      // id: "id",
       name: "name",
       email: "email",
       image: "profile_image_url",
@@ -33,8 +33,8 @@ trustedOrigins: ["http://localhost:3000", "http://localhost:5173"],
       id: "id",
       accountId: "accountId",
       providerId: "providerId",
-      userId: "artistId", 
-      user: "artist", 
+      userId: "artistId",
+      user: "artist",
       password: "password",
       createdAt: "createdAt",
       updatedAt: "updatedAt",
@@ -47,7 +47,7 @@ trustedOrigins: ["http://localhost:3000", "http://localhost:5173"],
       id: "id",
       expiresAt: "expiresAt",
       token: "token",
-      userId: "artistId", 
+      userId: "artistId",
       user: "artist",
       createdAt: "createdAt",
       updatedAt: "updatedAt",
@@ -56,9 +56,7 @@ trustedOrigins: ["http://localhost:3000", "http://localhost:5173"],
     },
   },
 
-
   emailAndPassword: {
     enabled: true,
   },
-
 });

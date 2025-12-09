@@ -1,6 +1,6 @@
 import { protectSignup } from "@arcjet/fastify";
 import { isMissingUserAgent } from "@arcjet/inspect";
-import { FastifyRequest, FastifyReply, FastifyInstance } from "fastify";
+import { FastifyRequest, FastifyReply } from "fastify";
 
 export async function signupGuard(
   request: FastifyRequest<{ Body: { email: string } }>,
@@ -47,7 +47,7 @@ export async function signupGuard(
       let message: string;
 
       if (decision.reason.emailTypes.includes("INVALID")) {
-        message = "email address format is invalid. Is there a typo?";
+        message = "email address format is invalid blessed";
       } else if (decision.reason.emailTypes.includes("DISPOSABLE")) {
         message = "we do not allow disposable email addresses.";
       } else if (decision.reason.emailTypes.includes("NO_MX_RECORDS")) {

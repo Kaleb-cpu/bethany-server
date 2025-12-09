@@ -9,7 +9,8 @@ import cookie from "@fastify/cookie";
 import arcjetPlugin from "./plugins/arcjet";
 
 // Routes
-import signupRoute from "./routes/signup";
+import signup from "./routes/signup";
+import signin from "./routes/signin";
 import authPlugin from "./plugins/authPlugin";
 
 export async function buildApp() {
@@ -46,7 +47,8 @@ export async function buildApp() {
   await fastify.register(arcjetPlugin);
 
   // Register routes
-  fastify.register(signupRoute); // register specific signup first
+  fastify.register(signup);
+  fastify.register(signin);
   fastify.register(authPlugin);
 
   return fastify;

@@ -1,36 +1,31 @@
-// routes/signup.ts
 import { FastifyInstance } from "fastify";
-import { signupGuard } from "../lib/arcjet/guards/signupGuard";
+import limitRate from "../lib/arcjet/guards/rateLimit";
 import { auth } from "../lib/authentication/auth";
 
-interface SignupBody {
-  name: string;
+interface SignInBody {
   email: string;
   password: string;
 }
 
 export default async function (fastify: FastifyInstance) {
-  fastify.post<{ Body: SignupBody }>(
-    "/api/auth/sign-up/email",
+  fastify.post<{ Body: SignInBody }>(
+    "/api/auth/sign-in/email",
     async (request, reply) => {
-      // --- Arcjet security check ---
-      const arcjetDecision = await signupGuard(request, reply);
-      if (reply.sent) return; // stop if Arcjet blocked the request
+      const arcjetDecision = await limitRate(request, reply);
+      if (reply.sent) return;
 
-      // --- Extract body for BetterAuth ---
-      const { name, email, password } = request.body;
+      //   Extract body for better-auth
+      const { email, password } = request.body;
 
       try {
-        // Call BetterAuth signup
-        const result = await auth.api.signUpEmail({
-          body: { name, email, password },
+        const result = await auth.api.signInEmail({
+          body: { email, password },
           returnHeaders: true,
         });
         const setCookie = result.headers?.get("set-cookie");
         if (setCookie) {
           reply.header("set-cookie", setCookie);
         }
-
         // --- Log everything neatly ---
         fastify.log.info(
           {
@@ -44,11 +39,11 @@ export default async function (fastify: FastifyInstance) {
               userEmail: email,
             },
           },
-          "Signup completed successfully"
+          "Signin completed successfully"
         );
 
         return reply.send({
-          message: "Signup successful",
+          message: "Signin successful",
           userId: result.response,
         });
       } catch (err: any) {
@@ -57,11 +52,11 @@ export default async function (fastify: FastifyInstance) {
             error: err,
             email,
           },
-          "Signup failed in BetterAuth"
+          "Signin failed in BetterAuth"
         );
 
         return reply.code(400).send({
-          error: "Signup failed",
+          error: "Signin failed",
           details: err?.message,
         });
       }

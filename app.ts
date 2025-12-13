@@ -32,7 +32,11 @@ export async function buildApp() {
   fastify.register(fastifyCors, {
     origin: process.env.CLIENT_ORIGIN
       ? process.env.CLIENT_ORIGIN.split(",")
-      : ["http://localhost:5173", "http://localhost:3000"],
+      : [
+          "http://localhost:5173",
+          "http://localhost:3000",
+          "http://localhost:5000",
+        ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
     credentials: true,

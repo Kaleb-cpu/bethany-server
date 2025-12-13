@@ -4,7 +4,11 @@ import { prismaGlobal as db } from "../prisma/prismaGlobal";
 import "dotenv/config";
 
 export const auth = betterAuth({
-  trustedOrigins: ["http://localhost:3000", "http://localhost:5173"],
+  trustedOrigins: [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://localhost:5000",
+  ],
   // Database adapter
   database: prismaAdapter(db, {
     provider: "postgresql",

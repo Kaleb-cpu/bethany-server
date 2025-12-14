@@ -43,5 +43,4 @@ async function arcjetPlugin(fastify: FastifyInstance, _options: unknown) {
   );
 }
 
-// THIS IS THE FIX
 export default fp(arcjetPlugin);
